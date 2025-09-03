@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 import 'dart:convert';
+import '../services/payment_service.dart';
 
 class CartViewModel extends ChangeNotifier {
   final String? username;
@@ -46,5 +47,14 @@ class CartViewModel extends ChangeNotifier {
     saveCart();
     notifyListeners();
   }
-}
 
+  Future<bool> processPayment(String email) async {
+    if (_cartItems.isEmpty) return false;
+    // Chiama il servizio di pagamento
+    final result = await PaymentService.processPayment(
+      email: email,
+      products: _cartItems,
+    );
+    return result;
+  }
+}
