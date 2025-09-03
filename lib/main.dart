@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'viewmodels/product_viewmodel.dart';
 import 'viewmodels/login_viewmodel.dart';
+import 'viewmodels/cart_viewmodel.dart';
 import 'views/product_list_view.dart';
 import 'views/cart_view.dart';
 import 'views/home_view.dart';
@@ -14,6 +15,17 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductViewModel()..fetchProducts()),
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProxyProvider<LoginViewModel, CartViewModel>(
+          create: (_) => CartViewModel(),
+          update: (_, loginVM, cartVM) {
+            final username = loginVM.loggedInUser?.username;
+            final newCartVM = CartViewModel(username: username);
+            if (username != null) {
+              newCartVM.loadCart();
+            }
+            return newCartVM;
+          },
+        ),
       ],
       child: const MyApp(),
     ),

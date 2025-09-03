@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/product_viewmodel.dart';
+import '../viewmodels/cart_viewmodel.dart';
 
 class ProductListView extends StatelessWidget {
   final String? category;
-  const ProductListView({Key? key, this.category}) : super(key: key);
+  const ProductListView({super.key, this.category});
 
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProductViewModel>(context);
+    final cartViewModel = Provider.of<CartViewModel>(context);
     final products = category == null
         ? viewModel.products
         : viewModel.productsByCategory(category!);
@@ -39,7 +41,7 @@ class ProductListView extends StatelessWidget {
                   subtitle: Text('${product.price} €'),
                   trailing: IconButton(
                     icon: Icon(Icons.add_shopping_cart),
-                    onPressed: () => viewModel.addToCart(product),
+                    onPressed: () => cartViewModel.addToCart(product),
                   ),
                 );
               },

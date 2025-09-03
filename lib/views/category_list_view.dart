@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../viewmodels/product_viewmodel.dart';
 
 class CategoryListView extends StatefulWidget {
-  const CategoryListView({Key? key}) : super(key: key);
+  const CategoryListView({super.key});
 
   @override
   State<CategoryListView> createState() => _CategoryListViewState();
