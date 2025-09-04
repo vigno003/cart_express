@@ -3,8 +3,9 @@ import '../models/product.dart';
 import '../models/review.dart';
 import '../services/product_service.dart';
 
+// ViewModel che gestisce la logica dei prodotti e delle categorie
 class ProductViewModel extends ChangeNotifier {
-  final ProductService _service = ProductService();
+  final ProductService _service = ProductService(); // Servizio per recuperare dati
   List<Product> _products = [];
   List<Product> get products => _products;
   bool _isLoading = false;
@@ -16,14 +17,16 @@ class ProductViewModel extends ChangeNotifier {
   bool _isCategoriesLoading = false;
   bool get isCategoriesLoading => _isCategoriesLoading;
 
+  // Recupera i prodotti dal servizio e aggiorna la UI
   Future<void> fetchProducts() async {
     _isLoading = true;
-    notifyListeners();
+    notifyListeners(); // Notifica la UI che sta caricando
     _products = await _service.fetchProducts();
     _isLoading = false;
-    notifyListeners();
+    notifyListeners(); // Notifica la UI che ha finito
   }
 
+  // Recupera le categorie dal servizio e aggiorna la UI
   Future<void> fetchCategories() async {
     _isCategoriesLoading = true;
     notifyListeners();
@@ -32,20 +35,24 @@ class ProductViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Restituisce i prodotti filtrati per categoria
   List<Product> productsByCategory(String category) {
     return _products.where((p) => p.category == category).toList();
   }
 
+  // Aggiunge un prodotto al carrello
   void addToCart(Product product) {
     _cart.add(product);
     notifyListeners();
   }
 
+  // Rimuove un prodotto dal carrello
   void removeFromCart(Product product) {
     _cart.remove(product);
     notifyListeners();
   }
 
+  // Aggiunge una recensione a un prodotto
   void addReviewToProduct(int productId, Review review) {
     final index = _products.indexWhere((p) => p.id == productId);
     if (index != -1) {
