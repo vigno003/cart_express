@@ -51,9 +51,14 @@ class CartViewModel extends ChangeNotifier {
   }
 
   // Rimuove un prodotto dal carrello
-  void removeFromCart(Product product) {
+  Future<void> removeFromCart(Product product) async {
     _cartItems.removeWhere((item) => item.product.id == product.id);
-    saveCart();
+    if (_cartItems.isEmpty && user != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('cart_${user!.username}');
+    } else {
+      await saveCart();
+    }
     notifyListeners();
   }
 
