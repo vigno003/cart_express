@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:cart_express/services/zenquotes_service.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -32,24 +33,16 @@ class _HomeViewState extends State<HomeView> {
       _loading = true;
       _error = null;
     });
-    final response = await http.get(Uri.parse('https://zenquotes.io/api/random'));
-    final data = json.decode(response.body);
-    if (data is List && data.isNotEmpty && data[0]['q'] != null && data[0]['a'] != null) {
-      if ((data[0]['q'] as String).toLowerCase().contains('too many requests')) {
-        setState(() {
-          _error = 'Hai richiesto troppe citazioni. Riprova più tardi.';
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _quote = data[0]['q'];
-          _author = data[0]['a'];
-          _loading = false;
-        });
-      }
+    final result = await ZenQuotesService.fetchQuote();
+    if (result['error'] != null) {
+      setState(() {
+        _error = result['error'];
+        _loading = false;
+      });
     } else {
       setState(() {
-        _error = 'Errore sconosciuto.';
+        _quote = result['quote'];
+        _author = result['author'];
         _loading = false;
       });
     }
@@ -58,20 +51,95 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Benvenuti su ProductExpress'),
-      ),
-      body: Center(
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Riga in alto con logout e carrello
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.logout, color: Colors.red),
+                    tooltip: 'Logout',
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart, color: Colors.blue),
+                    tooltip: 'Carrello',
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/cart');
+                    },
+                  ),
+                ],
+              ),
+            ),
+            // Titolo centrato con Montserrat
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Column(
+                children: [
+                  Text(
+                    'ProductExpress',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'il vostro negozio di fiducia',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Spazio extra sotto titolo e sottotitolo
+            const SizedBox(height: 56),
+            // Bottone categorie grande e squadrato
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/categories');
+                  },
+                  child: const Text('Vai alle categorie'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // Citazione sotto il bottone categorie
             if (_loading)
               const CircularProgressIndicator()
             else if (_error != null)
-              Text(_error!, style: const TextStyle(color: Colors.red))
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(_error!, style: const TextStyle(color: Colors.red)),
+              )
             else if (_quote != null)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                 child: Column(
                   children: [
                     Text(
@@ -87,40 +155,20 @@ class _HomeViewState extends State<HomeView> {
                   ],
                 ),
               ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cart');
-              },
-              child: const Text('Vai al carrello'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                _fetchQuote();
-              },
-              child: const Text('Nuova citazione'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/categories');
-              },
-              child: const Text('Vai alle categorie'),
-            ),
-            const SizedBox(height: 16),
-            const Spacer(),
+            // Bottone nuova citazione meno evidente
             Padding(
-              padding: const EdgeInsets.only(bottom: 32.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+              padding: const EdgeInsets.only(top: 16.0),
+              child: TextButton(
+                onPressed: _fetchQuote,
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey[700],
+                  textStyle: const TextStyle(fontSize: 14),
                 ),
-                child: const Text('Logout'),
+                child: const Text('Nuova citazione'),
               ),
             ),
+            // Spacer per riempire lo spazio
+            const Spacer(),
           ],
         ),
       ),
