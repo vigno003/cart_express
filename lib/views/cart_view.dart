@@ -32,14 +32,11 @@ class _CartViewState extends State<CartView> {
       );
     }
 
-    return ChangeNotifierProvider(
-      create: (_) => CartViewModel(user: user)..loadCart(),
-      builder: (context, child) {
-        final cartViewModel = Provider.of<CartViewModel>(context);
-
-        return Scaffold(
-          appBar: AppBar(title: Text('Carrello')),
-          body: Column(
+    return Scaffold(
+      appBar: AppBar(title: Text('Carrello')),
+      body: Consumer<CartViewModel>(
+        builder: (context, cartViewModel, child) {
+          return Column(
             children: [
               Expanded(
                 child: ListView.builder(
@@ -56,7 +53,10 @@ class _CartViewState extends State<CartView> {
                       subtitle: Text('Quantità: $quantity\nTotale: $totalPrice €'),
                       trailing: IconButton(
                         icon: Icon(Icons.remove_shopping_cart),
-                        onPressed: () => cartViewModel.removeFromCart(product),
+                        onPressed: () async {
+                          await cartViewModel.removeFromCart(product);
+                          if (mounted) setState(() {});
+                        },
                       ),
                     );
                   },
@@ -76,34 +76,15 @@ class _CartViewState extends State<CartView> {
                           ? null
                           : () async {
                         setState(() => _isLoading = true);
-
                         final success = await cartViewModel.processPayment(cartViewModel.userEmail!);
-
-                        setState(() {
-                          _isLoading = false;
-                        });
-
-                        if (success) {
-                          // ✅ svuota il carrello
-                          cartViewModel.clearCart();
-
-                          // ✅ messaggio chiaro
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                        if (success && mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Pagamento riuscito! Email di conferma inviata.'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-
-                          // ✅ opzionale: naviga a pagina di conferma ordine
-                          Navigator.pushReplacementNamed(context, '/order-success');
-                        } else {
-                          // ❌ errore pagamento/email
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Pagamento fallito. Riprova.'),
-                              backgroundColor: Colors.red,
-                            ),
+                            SnackBar(content: Text('Pagamento effettuato!')),
                           );
                         }
                       },
@@ -122,9 +103,9 @@ class _CartViewState extends State<CartView> {
                 ),
               ),
             ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
