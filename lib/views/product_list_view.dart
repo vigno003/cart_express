@@ -129,7 +129,7 @@ class _ProductListTileState extends State<_ProductListTile> {
 
 class ProductDetailOverlay extends StatefulWidget {
   final Product product;
-  const ProductDetailOverlay({required this.product});
+  const ProductDetailOverlay({super.key, required this.product});
 
   @override
   State<ProductDetailOverlay> createState() => _ProductDetailOverlayState();
