@@ -69,7 +69,6 @@ class ProductViewModel extends ChangeNotifier {
         reviews: reviews,
       );
       notifyListeners();
-      // TODO: persistenza locale se necessario
     }
   }
 }
