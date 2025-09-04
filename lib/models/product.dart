@@ -1,3 +1,5 @@
+import 'review.dart';
+
 class Product {
   final int id;
   final String title;
@@ -5,7 +7,7 @@ class Product {
   final String description;
   final String category;
   final String image;
-  final List<int>? reviews;
+  final List<Review>? reviews;
 
   Product({
     required this.id,
@@ -19,7 +21,7 @@ class Product {
 
   double? get averageRating {
     if (reviews == null || reviews!.isEmpty) return null;
-    return reviews!.reduce((a, b) => a + b) / reviews!.length;
+    return reviews!.map((r) => r.rating).reduce((a, b) => a + b) / reviews!.length;
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -30,7 +32,9 @@ class Product {
       description: json['description'],
       category: json['category'],
       image: json['image'],
-      reviews: json['reviews'] != null ? List<int>.from(json['reviews']) : null,
+      reviews: json['reviews'] != null
+          ? List<Review>.from((json['reviews'] as List).map((e) => Review.fromJson(e)))
+          : null,
     );
   }
 
@@ -41,6 +45,6 @@ class Product {
         'description': description,
         'category': category,
         'image': image,
-        if (reviews != null) 'reviews': reviews,
+        if (reviews != null) 'reviews': reviews!.map((r) => r.toJson()).toList(),
       };
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import '../models/review.dart';
 import '../services/product_service.dart';
 
 class ProductViewModel extends ChangeNotifier {
@@ -43,5 +44,25 @@ class ProductViewModel extends ChangeNotifier {
   void removeFromCart(Product product) {
     _cart.remove(product);
     notifyListeners();
+  }
+
+  void addReviewToProduct(int productId, Review review) {
+    final index = _products.indexWhere((p) => p.id == productId);
+    if (index != -1) {
+      final product = _products[index];
+      final reviews = product.reviews ?? [];
+      reviews.add(review);
+      _products[index] = Product(
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        category: product.category,
+        image: product.image,
+        reviews: reviews,
+      );
+      notifyListeners();
+      // TODO: persistenza locale se necessario
+    }
   }
 }
