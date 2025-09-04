@@ -18,6 +18,7 @@ class _CartViewState extends State<CartView> {
   Widget build(BuildContext context) {
     final loginViewModel = Provider.of<LoginViewModel>(context);
     final user = loginViewModel.loggedInUser;
+
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: Text('Carrello')),
@@ -30,10 +31,12 @@ class _CartViewState extends State<CartView> {
         ),
       );
     }
+
     return ChangeNotifierProvider(
       create: (_) => CartViewModel(user: user)..loadCart(),
       builder: (context, child) {
         final cartViewModel = Provider.of<CartViewModel>(context);
+
         return Scaffold(
           appBar: AppBar(title: Text('Carrello')),
           body: Column(
@@ -46,6 +49,7 @@ class _CartViewState extends State<CartView> {
                     final product = cartItem.product;
                     final quantity = cartItem.quantity;
                     final totalPrice = (product.price * quantity).toStringAsFixed(2);
+
                     return ListTile(
                       leading: Image.network(product.image, width: 50, height: 50),
                       title: Text(product.title),
@@ -71,14 +75,48 @@ class _CartViewState extends State<CartView> {
                       onPressed: _isLoading || cartViewModel.userEmail == null
                           ? null
                           : () async {
-                              setState(() => _isLoading = true);
-                              final success = await cartViewModel.processPayment(cartViewModel.userEmail!);
-                              setState(() {
-                                _isLoading = false;
-                                _message = success ? 'Pagamento riuscito!' : 'Pagamento fallito.';
-                              });
-                            },
-                      child: _isLoading ? CircularProgressIndicator() : Text('Procedi al pagamento'),
+                        setState(() => _isLoading = true);
+
+                        final success = await cartViewModel.processPayment(cartViewModel.userEmail!);
+
+                        setState(() {
+                          _isLoading = false;
+                        });
+
+                        if (success) {
+                          // ✅ svuota il carrello
+                          cartViewModel.clearCart();
+
+                          // ✅ messaggio chiaro
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Pagamento riuscito! Email di conferma inviata.'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
+                          // ✅ opzionale: naviga a pagina di conferma ordine
+                          Navigator.pushReplacementNamed(context, '/order-success');
+                        } else {
+                          // ❌ errore pagamento/email
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Pagamento fallito. Riprova.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      child: _isLoading
+                          ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                          : Text('Procedi al pagamento'),
                     ),
                   ],
                 ),
