@@ -14,6 +14,7 @@ class CartViewModel extends ChangeNotifier {
   CartViewModel({this.user});
 
   List<CartItem> get cartItems => _cartItems;
+
   String? get userEmail => user?.email;
 
   // Carica il carrello salvato nelle SharedPreferences per l'utente
@@ -38,7 +39,8 @@ class CartViewModel extends ChangeNotifier {
 
   // Aggiunge un prodotto al carrello (o aggiorna la quantità)
   void addToCart(Product product, {int quantity = 1}) {
-    final index = _cartItems.indexWhere((item) => item.product.id == product.id);
+    final index = _cartItems.indexWhere((item) =>
+    item.product.id == product.id);
     if (index != -1) {
       _cartItems[index].quantity += quantity;
     } else {
@@ -65,12 +67,14 @@ class CartViewModel extends ChangeNotifier {
   // Elenco dei metodi pubblici della classe
   // processPayment: gestisce il pagamento degli articoli nel carrello
   Future<bool> processPayment(String email) async {
-    if (_cartItems.isEmpty) return false;
-    // Chiama il servizio di pagamento
+    if (cartItems.isEmpty) return false;
+
+    // Passa l'intero cartItems al PaymentService
     final result = await PaymentService.processPayment(
       email: email,
-      products: _cartItems.map((e) => e.product).toList(),
+      cartItems: cartItems, // <- qui
     );
+
     return result;
   }
 }
