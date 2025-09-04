@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import '../models/product.dart';
 import '../models/cart_item.dart'; // se hai questa classe
 
 class PaymentService {

@@ -58,9 +58,12 @@ class CartViewModel extends ChangeNotifier {
   }
 
   // Pulisce il carrello
-  void clearCart() {
+  Future<void> clearCart() async {
     _cartItems.clear();
-    saveCart();
+    if (user != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('cart_${user!.username}');
+    }
     notifyListeners();
   }
 
@@ -74,6 +77,10 @@ class CartViewModel extends ChangeNotifier {
       email: email,
       cartItems: cartItems, // <- qui
     );
+
+    if (result) {
+      await clearCart();
+    }
 
     return result;
   }
