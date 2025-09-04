@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import '../models/cart_item.dart'; // se hai questa classe
+import '../models/cart_item.dart';
 
 class PaymentService {
-  static const String backendUrl = 'http://192.168.1.177:5000';
+  static const String backendUrl = 'http://192.168.1.177:5000'; // ipconfig per ip localhost
 
   // Ora riceve la lista di CartItem, così hai sia product che quantity
   static Future<bool> processPayment({
     required String email,
-    required List<CartItem> cartItems, // <- attenzione qui
+    required List<CartItem> cartItems,
   }) async {
     final orderId = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -23,6 +23,7 @@ class PaymentService {
     try {
       await Future.delayed(const Duration(seconds: 3)); // simulazione pagamento
 
+      // chiamata a API server, passaggio dati in JSON
       final url = Uri.parse('$backendUrl/sendMail');
       final response = await http.post(
         url,
@@ -34,6 +35,7 @@ class PaymentService {
         }),
       );
 
+      // attesa risposta API
       if (response.statusCode == 200) {
         debugPrint('Email inviata');
         return true;
