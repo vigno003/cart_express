@@ -30,10 +30,17 @@ class CartViewModel extends ChangeNotifier {
     await prefs.setString('cart_${username!}', cartString);
   }
 
-  void addToCart(Product product) {
-    _cartItems.add(product);
+  void addToCart(Product product, {int quantity = 1}) {
+    for (int i = 0; i < quantity; i++) {
+      _cartItems.add(product);
+    }
     saveCart();
     notifyListeners();
+  }
+
+  // Mantieni la vecchia funzione per retrocompatibilità
+  void addToCartSingle(Product product) {
+    addToCart(product, quantity: 1);
   }
 
   void removeFromCart(Product product) {
