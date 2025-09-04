@@ -18,9 +18,9 @@ void main() {
         ChangeNotifierProxyProvider<LoginViewModel, CartViewModel>(
           create: (_) => CartViewModel(),
           update: (_, loginVM, cartVM) {
-            final username = loginVM.loggedInUser?.username;
-            final newCartVM = CartViewModel(username: username);
-            if (username != null) {
+            final user = loginVM.loggedInUser;
+            final newCartVM = CartViewModel(user: user);
+            if (user != null) {
               newCartVM.loadCart();
             }
             return newCartVM;

@@ -4,21 +4,23 @@ import '../models/product.dart';
 import '../models/cart_item.dart';
 import 'dart:convert';
 import '../services/payment_service.dart';
+import '../models/user.dart';
 
 // ViewModel che gestisce la logica del carrello per ogni utente
 class CartViewModel extends ChangeNotifier {
-  final String? username;
+  final User? user;
   List<CartItem> _cartItems = [];
 
-  CartViewModel({this.username});
+  CartViewModel({this.user});
 
   List<CartItem> get cartItems => _cartItems;
+  String? get userEmail => user?.email;
 
   // Carica il carrello salvato nelle SharedPreferences per l'utente
   Future<void> loadCart() async {
-    if (username == null) return;
+    if (user == null) return;
     final prefs = await SharedPreferences.getInstance();
-    final cartString = prefs.getString('cart_${username!}');
+    final cartString = prefs.getString('cart_${user!.username}');
     if (cartString != null) {
       final List<dynamic> decoded = jsonDecode(cartString);
       _cartItems = decoded.map((e) => CartItem.fromJson(e)).toList();
@@ -28,10 +30,10 @@ class CartViewModel extends ChangeNotifier {
 
   // Salva il carrello nelle SharedPreferences per l'utente
   Future<void> saveCart() async {
-    if (username == null) return;
+    if (user == null) return;
     final prefs = await SharedPreferences.getInstance();
     final cartString = jsonEncode(_cartItems.map((e) => e.toJson()).toList());
-    await prefs.setString('cart_${username!}', cartString);
+    await prefs.setString('cart_${user!.username}', cartString);
   }
 
   // Aggiunge un prodotto al carrello (o aggiorna la quantità)
