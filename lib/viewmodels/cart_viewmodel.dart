@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
+import '../models/cart_item.dart';
 import 'dart:convert';
 import '../services/payment_service.dart';
 
 class CartViewModel extends ChangeNotifier {
   final String? username;
-  List<Product> _cartItems = [];
+  List<CartItem> _cartItems = [];
 
   CartViewModel({this.username});
 
-  List<Product> get cartItems => _cartItems;
+  List<CartItem> get cartItems => _cartItems;
 
   Future<void> loadCart() async {
     if (username == null) return;
@@ -18,7 +19,7 @@ class CartViewModel extends ChangeNotifier {
     final cartString = prefs.getString('cart_${username!}');
     if (cartString != null) {
       final List<dynamic> decoded = jsonDecode(cartString);
-      _cartItems = decoded.map((e) => Product.fromJson(e)).toList();
+      _cartItems = decoded.map((e) => CartItem.fromJson(e)).toList();
       notifyListeners();
     }
   }
@@ -31,20 +32,18 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void addToCart(Product product, {int quantity = 1}) {
-    for (int i = 0; i < quantity; i++) {
-      _cartItems.add(product);
+    final index = _cartItems.indexWhere((item) => item.product.id == product.id);
+    if (index != -1) {
+      _cartItems[index].quantity += quantity;
+    } else {
+      _cartItems.add(CartItem(product: product, quantity: quantity));
     }
     saveCart();
     notifyListeners();
   }
 
-  // Mantieni la vecchia funzione per retrocompatibilità
-  void addToCartSingle(Product product) {
-    addToCart(product, quantity: 1);
-  }
-
   void removeFromCart(Product product) {
-    _cartItems.remove(product);
+    _cartItems.removeWhere((item) => item.product.id == product.id);
     saveCart();
     notifyListeners();
   }
@@ -60,7 +59,7 @@ class CartViewModel extends ChangeNotifier {
     // Chiama il servizio di pagamento
     final result = await PaymentService.processPayment(
       email: email,
-      products: _cartItems,
+      products: _cartItems.map((e) => e.product).toList(),
     );
     return result;
   }

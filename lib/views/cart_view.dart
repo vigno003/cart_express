@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/cart_viewmodel.dart';
+import '../models/cart_item.dart';
 
 class CartView extends StatefulWidget {
   const CartView({super.key});
@@ -25,11 +26,14 @@ class _CartViewState extends State<CartView> {
             child: ListView.builder(
               itemCount: cartViewModel.cartItems.length,
               itemBuilder: (context, index) {
-                final product = cartViewModel.cartItems[index];
+                final cartItem = cartViewModel.cartItems[index];
+                final product = cartItem.product;
+                final quantity = cartItem.quantity;
+                final totalPrice = (product.price * quantity).toStringAsFixed(2);
                 return ListTile(
                   leading: Image.network(product.image, width: 50, height: 50),
                   title: Text(product.title),
-                  subtitle: Text('${product.price} €'),
+                  subtitle: Text('Quantità: $quantity\nTotale: $totalPrice €'),
                   trailing: IconButton(
                     icon: Icon(Icons.remove_shopping_cart),
                     onPressed: () => cartViewModel.removeFromCart(product),
