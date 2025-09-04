@@ -80,7 +80,7 @@ class CartViewModel extends ChangeNotifier {
     // Passa l'intero cartItems al PaymentService
     final result = await PaymentService.processPayment(
       email: email,
-      cartItems: cartItems, // <- qui
+      cartItems: cartItems,
     );
 
     if (result) {
