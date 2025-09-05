@@ -14,6 +14,14 @@ L’applicazione è sviluppata in **Flutter** per garantire un’esperienza flui
 
 ## Struttura Progetto
 
+### API Mail
+
+Abbiamo sviluppato un server JS dove utilizza le librerie Express e NodeMailer principalmente.
+
+Una volta ricevuti i dati dal servizio Android l’API costruisce e invia la mail, il server rimane attivo in localhost sulla porta 5000, per eseguire il server basterà scaricare il file zip, installare le librerie tramite il comando `npm install` e lanciare il comando `node server.js` per attivare il servizio.
+
+Momentaneamente non avendo un indirizzo IP fisso utilizziamo il localhost della macchina che emula il progetto, per collegarsi dobbiamo trovare l’ indirizzo IP del nostro localhost, `ipconfig` ci permette di visualizzarlo, dopodiché basterà modificare in **PaymentService** la variabile **backednUrl** con l’ IP del nostro localhost.
+
 ### Services
 
 - Payment_service: Servizio per la gestione del pagamento del carrello, invoca un’API su server locale per la gestione dell’invio mail.
