@@ -66,6 +66,20 @@ class _CartViewState extends State<CartView> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    // Calcolo e visualizzazione del totale carrello
+                    Builder(
+                      builder: (context) {
+                        final totalCart = cartViewModel.cartItems.fold<double>(
+                          0.0,
+                          (sum, item) => sum + item.product.price * item.quantity,
+                        );
+                        return Text(
+                          'Totale carrello: ${totalCart.toStringAsFixed(2)} €',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 8),
                     if (cartViewModel.userEmail != null)
                       Text('Email: ${cartViewModel.userEmail!}', style: TextStyle(fontWeight: FontWeight.bold)),
                     if (_message != null)
