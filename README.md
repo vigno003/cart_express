@@ -65,11 +65,12 @@ L’applicazione è sviluppata in **Flutter** per garantire un’esperienza flui
 ## Funzionalità Future
 
 - Aggiunta di un Database per la gestione centralizzata dei dati utilizzati in app
-- Registrazione nuovo Utente
+- Gestione del profilo utente, con possibilità di modifica dati
+- Registrazione di nuovi utenti
 - Ricerca prodotti nel sito, tramite ricerca standard e utilizzo di filtri avanzati
-- Gestione ordine regalo verso utente o persona esterna
-- Modifica dati Utente
-- Pagamento Carrello tramite servizi sicuri
+- Funzione di wishlist per salvare prodotti preferiti
+- Possibilità di creare ordini regalo
+- Funzione di pagamento con carta di credito o altri servizi(PayPal, Satispay, etc)
 
 ## Conclusione
 

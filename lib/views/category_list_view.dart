@@ -40,15 +40,25 @@ class _CategoryListViewState extends State<CategoryListView> {
             itemCount: viewModel.categories.length,
             itemBuilder: (context, index) {
               final category = viewModel.categories[index];
-              return ListTile(
-                title: Text(category),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/products',
-                    arguments: category,
-                  );
-                },
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  title: Text(
+                    category,
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/products',
+                      arguments: category,
+                    );
+                  },
+                ),
               );
             },
           ),

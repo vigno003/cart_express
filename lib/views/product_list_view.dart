@@ -113,7 +113,10 @@ class _ProductListTileState extends State<_ProductListTile> {
                     label: Text('Aggiungi'),
                     onPressed: () {
                       widget.cartViewModel.addToCart(product, quantity: quantity);
-                      final snackBar = SnackBar(content: Text('Aggiunto $quantity x ${product.title} al carrello'));
+                      final snackBar = SnackBar(
+                        content: Text('Aggiunto $quantity x ${product.title} al carrello'),
+                        duration: Duration(seconds: 1), // Durata ridotta a 1 secondo
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     },
                   ),
