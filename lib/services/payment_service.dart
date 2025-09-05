@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/cart_item.dart';
 
 class PaymentService {
-  static const String backendUrl = 'http://192.168.1.177:5000'; // ipconfig per ip localhost
+  static const String backendUrl = 'http://192.168.1.223:5000'; // ipconfig per ip localhost
 
   // Ora riceve la lista di CartItem, così hai sia product che quantity
   static Future<bool> processPayment({
