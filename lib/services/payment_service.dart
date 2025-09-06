@@ -11,6 +11,7 @@ class PaymentService {
     required String email,
     required List<CartItem> cartItems,
   }) async {
+    // Creazione OrderId di test da data corrente
     final orderId = DateTime.now().millisecondsSinceEpoch.toString();
 
     // Converte i prodotti in JSON con quantità reale
